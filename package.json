@@ -23,6 +23,7 @@
     ],
     "homepage": "https://github.com/sorenbs/MoveTo",
     "files": [
-        "moveto.js"
+        "moveto.js",
+		"alert.js"
     ]
 }
