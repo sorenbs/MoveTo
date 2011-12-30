@@ -1,6 +1,6 @@
 {
     "name": "MoveTo",
-    "version": "1.1",
+    "version": "1.2",
     "title": "Move entity towards mouse",
     "author": {
         "name": "Søren Bramer Schmidt",
@@ -13,7 +13,6 @@
         }
     ],
     "dependencies": {
-        "Mouse": ">0",
         "Craftty": ">0.4"
     },
     "description": "The mouse equivalent of Fourway. Click and the entity will move toward the point. NewDirection event will be triggered",
@@ -23,7 +22,6 @@
     ],
     "homepage": "https://github.com/sorenbs/MoveTo",
     "files": [
-        "moveto.js",
-		"alert.js"
+        "moveto.js"
     ]
 }

@@ -1,4 +1,4 @@
-﻿Crafty.c("WalkTo", {
+﻿Crafty.c("MoveTo", {
 	_speed: 2,
 
 	init: function () {
