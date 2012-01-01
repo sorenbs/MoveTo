@@ -2,7 +2,8 @@
 	_speed: 2,
 
 	init: function () {
-		this.target = null;
+		this._target = null;
+		this._movement = { x: 0, y: 0 };
 		this.requires("Mouse");
 		Crafty.addEvent(this, Crafty.stage.elem, "mousedown", function (e) {
 			this._target = { x: e.realX, y: e.realY };
