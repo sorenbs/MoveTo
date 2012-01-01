@@ -16,6 +16,7 @@
         "Craftty": ">0.4"
     },
     "description": "The mouse equivalent of Fourway. Click and the entity will move toward the point. NewDirection event will be triggered",
+	"jsfiddle": "http://jsfiddle.net/j7uCh/1/embedded/",
     "keywords": [
         "mouse",
         "move"
