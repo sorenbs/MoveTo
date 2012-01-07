@@ -1,4 +1,4 @@
-﻿//1.7
+﻿///1.7
 Crafty.c("MoveTo", {
 	_speed: 2,
 
