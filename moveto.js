@@ -51,6 +51,10 @@ Crafty.c("MoveTo", {
            */
         if (this.disableControls || !this._target) return;
         if (norm(this._target.x - this.x, this._target.y - this.y) < this._speed) {
+          var prev_pos = {
+            x:this.x,
+            y:this.y
+          }
           this._movement={
             x:this._target.x - this.x,
             y:this._target.y - this.y
@@ -58,7 +62,7 @@ Crafty.c("MoveTo", {
           this.x=this._target.x;
           this.y=this._target.y;
           this._target=undefined;
-          this.trigger('Moved', this._movement);
+          this.trigger('Moved', this.prev_pos);
         }
 
         if (this._movement.x !== 0) {
