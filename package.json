@@ -1,6 +1,6 @@
 {
     "name": "MoveTo",
-    "version": "1.3",
+    "version": "1.4",
     "title": "Move entity towards mouse",
     "author": {
         "name": "Søren Bramer Schmidt",
