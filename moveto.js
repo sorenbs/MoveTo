@@ -2,16 +2,57 @@
 	_speed: 2,
 
 	_onmousedown: function (e) {
+		// clear any existing EnterFrame handlers
+		this._stopMoving();
+
 		this._target = { x: e.realX, y: e.realY };
-		var dx = e.realX - this.x, dy = e.realY - this.y;
-		this._movement = {
-			x: (dx * this._speed) / (Math.sqrt(dx * dx + dy * dy)),
-			y: (dy * this._speed) / (Math.sqrt(dx * dx + dy * dy))
-		},
-      this.trigger('NewDirection', this._movement);
+		this.trigger('NewDirection', this._movement);
+		this.bind("EnterFrame", this._enterFrame);
 	},
 
-	moveTo: function(speed) {
+	_stopMoving: function () {
+		this._movement = {
+			x: 0,
+			y: 0
+		};
+		this._target = undefined;
+		this.unbind("EnterFrame", this._enterFrame);
+	},
+
+	_enterFrame: function () {
+		if (this.disableControls || !this._target) {
+			return;
+		}
+
+		// target (almost) reached - jump the last part.
+		// We could be more fancy (circular check instead of square), but don't want to pay the sqrt penalty each frame.
+		if (Math.abs(this._target.x - this.x) < this._speed && Math.abs(this._target.y - this.y) < this._speed) {
+			var prev_pos = {
+				x: this.x,
+				y: this.y
+			};
+			this.x = this._target.x;
+			this.y = this._target.y;
+
+			this._stopMoving();
+
+			this.trigger('Moved', prev_pos);
+			this.trigger('NewDirection', this._movement);
+			return;
+		};
+
+		// Pixels to move are calculated from location and target every frame to handle the case when something else (IE, collision detection logic) changes our position.
+		// Some cleaver optimization could probably eliminate the sqrt cost...
+		var dx = this._target.x - this.x, dy = this._target.y - this.y, oldX = this.x, oldY = this.y;
+
+		// Moved triggered twice to allow for better collision logic (like moving along diagonal walls)
+		this.x += (dx * this._speed) / (Math.sqrt(dx * dx + dy * dy));
+		this.trigger('Moved', { x: oldX, y: this.y });
+		this.y += (dy * this._speed) / (Math.sqrt(dx * dx + dy * dy));
+		this.trigger('Moved', { x: this.x, y: oldY });
+	},
+
+	moveTo: function (speed) {
 		this._speed = speed;
 		return this;
 	},
@@ -21,54 +62,5 @@
 
 		Crafty.addEvent(this, Crafty.stage.elem, "mousedown", this._onmousedown);
 
-		var norm = function (x, y) {
-			absx = Math.abs(x);
-			absy = Math.abs(y);
-
-			if (absx > absy) {
-				max = absx;
-				min = absy;
-			} else {
-				max = absy;
-				min = absx;
-			}
-
-			return max * Math.sqrt(1 + Math.pow(min / max, 2));
-		};
-
-
-		this.bind("EnterFrame", function () {
-
-			if (this.disableControls || !this._target) {
-				return;
-			}
-
-			// target reached. stop moving, jump the last part, clear the target, trigger Moved and NewDirection
-			if (norm(this._target.x - this.x, this._target.y - this.y) < this._speed) {
-				var prev_pos = {
-					x: this.x,
-					y: this.y
-				};
-				this._movement = {
-					x: 0,
-					y: 0
-				};
-				this.x = this._target.x;
-				this.y = this._target.y;
-				this._target = undefined;
-				this.trigger('Moved', this.prev_pos);
-				this.trigger('NewDirection', this._movement);
-			};
-
-			if (this._movement.x !== 0) {
-				this.x += this._movement.x;
-				this.trigger('Moved', { x: this.x - this._movement.x, y: this.y });
-			};
-
-			if (this._movement.y !== 0) {
-				this.y += this._movement.y;
-				this.trigger('Moved', { x: this.x, y: this.y - this._movement.y });
-			}
-		});
 	}
 });
