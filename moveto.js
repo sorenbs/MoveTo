@@ -2,6 +2,9 @@
 	_speed: 2,
 
 	_onmousedown: function (e) {
+		if (this.disregardMouseInput) {
+			return;
+		}
 		// clear any existing EnterFrame handlers
 		this._stopMoving();
 
