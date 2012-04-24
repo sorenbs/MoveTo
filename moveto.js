@@ -9,15 +9,10 @@
 		this._stopMoving();
 
 		this._target = { x: e.realX, y: e.realY };
-		this.trigger('NewDirection', this._movement);
 		this.bind("EnterFrame", this._enterFrame);
 	},
 
 	_stopMoving: function () {
-		this._movement = {
-			x: 0,
-			y: 0
-		};
 		this._target = undefined;
 		this.unbind("EnterFrame", this._enterFrame);
 	},
@@ -40,18 +35,26 @@
 			this._stopMoving();
 
 			this.trigger('Moved', prev_pos);
-			this.trigger('NewDirection', this._movement);
+			this.trigger('NewDirection', { x: 0, y: 0 });
 			return;
 		};
 
 		// Pixels to move are calculated from location and target every frame to handle the case when something else (IE, collision detection logic) changes our position.
 		// Some cleaver optimization could probably eliminate the sqrt cost...
-		var dx = this._target.x - this.x, dy = this._target.y - this.y, oldX = this.x, oldY = this.y;
+		var dx = this._target.x - this.x, dy = this._target.y - this.y, oldX = this.x, oldY = this.y,
+		movX = (dx * this._speed) / (Math.sqrt(dx * dx + dy * dy)),
+		movY = (dy * this._speed) / (Math.sqrt(dx * dx + dy * dy));
+
+		// Triggered when direction changes - either because of a mouse click, or something external
+		if (Math.abs(movX - this.oldDirection.x) > 0.1 || Math.abs(movY - this.oldDirection.y) > 0.1) {
+			this.trigger("NewDirection", { x: movX, y: movY })
+		}
+		this.oldDirection = { x: movX, y: movY };
 
 		// Moved triggered twice to allow for better collision logic (like moving along diagonal walls)
-		this.x += (dx * this._speed) / (Math.sqrt(dx * dx + dy * dy));
+		this.x += movX;
 		this.trigger('Moved', { x: oldX, y: this.y });
-		this.y += (dy * this._speed) / (Math.sqrt(dx * dx + dy * dy));
+		this.y += movY;
 		this.trigger('Moved', { x: this.x, y: oldY });
 	},
 
@@ -62,6 +65,7 @@
 
 	init: function () {
 		this.requires("Mouse");
+		this.oldDirection = { x: 0, y: 0 }
 
 		Crafty.addEvent(this, Crafty.stage.elem, "mousedown", this._onmousedown);
 
