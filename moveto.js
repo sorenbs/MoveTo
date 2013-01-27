@@ -1,15 +1,20 @@
 ﻿Crafty.c("MoveTo", {
 	_speed: 2,
 
-	_onmousedown: function (e) {
-		if (this.disregardMouseInput) {
-			return;
-		}
+	_moveto: function(e) {
 		// clear any existing EnterFrame handlers
 		this._stopMoving();
 
 		this._target = { x: e.realX, y: e.realY };
 		this.bind("EnterFrame", this._enterFrame);
+	}
+
+	_onmousedown: function (e) {
+		if (this.disregardMouseInput) {
+			return;
+		} else {
+			this._moveto(e);
+		}
 	},
 
 	_stopMoving: function () {
